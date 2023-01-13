@@ -131,3 +131,24 @@ class EnergyMeter:
     def apparent_powerdemand(self):
         """ Read the apparent power demand value """
         return self.__retry_mechanism(self._handle.read_float, 33, 4), 'KVA'
+
+    # Read the static configuration details
+    # Range is 0x01 to 0x0F, 0x29 to 0x2C
+    # Note: the address used is one less than the actual address.
+    @property
+    def serial_config(self):
+        """ Read the Serial port configuration (baudrate 0x0B, parity 0x0C, stopbits 0x0D) setup in the device """
+        # get the baud rate code
+        baud_code = self.__retry_mechanism(self._handle.read_register, 10, 3)
+        baud_rate = 9600 if baud_code == 0 else 19200 if baud_code == 1 else 0
+        # get the parity bits
+        parity_bits = self.__retry_mechanism(self._handle.read_register, 11, 3)
+        # get the stop bits
+        stop_bits = self.__retry_mechanism(self._handle.read_register, 12, 3)
+        # return the triplet
+        return baud_rate, parity_bits, stop_bits
+
+    @property
+    def address(self):
+        """ Read the slave ID [0x2] """
+        return self.__retry_mechanism(self._handle.read_register, 1, 3)
