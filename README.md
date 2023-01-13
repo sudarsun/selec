@@ -28,4 +28,11 @@ p, unit = dev.active_power
 
 # read the reactive energy in kVAr
 e, unit = dev.reactive_energy
+
+# read the serial configuration
+baud, parity, stopbits = dev.serial_config
+
+# get the address of the device
+a = dev.address
+
 ```
